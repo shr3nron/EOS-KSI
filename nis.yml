@@ -1,0 +1,47 @@
+- hosts: devs
+  tasks:
+  
+  - name: aktualizacjia pakietow
+    raw: apt-get update
+ 
+  - name: install python 2
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal )
+
+  - name: install pip
+    raw: apt-get install -y python-pip --force-yes
+  
+  - name: instalal pexpect
+    raw: pip install pexpect --index-url=https://pypi.python.org/simple/
+  
+  - name: instalal pexpect
+    raw: pip install --upgrade pip
+
+  - name: podanie nazwy domeny
+    expect:
+      command: apt-get -y install nis
+      responses: 
+        NIS domain: 'kasolvenzia'
+  
+  - copy:
+      src: /opt/playbooks/nis/nsswitch.conf
+      dest: /etc/nsswitch.conf
+      owner: root
+      group: root
+      mode: 0644
+  
+  - copy:
+      src: /opt/playbooks/nis/yp.conf
+      dest: /etc/yp.conf
+      owner: root
+      group: root
+      mode: 0644
+  
+  - copy:
+      src: /opt/playbooks/nis/common-session
+      dest: /etc/pam.d/common-session
+      owner: root
+      group: root
+      mode: 0644
+  
+  - name: Restartowanie procesu NIS
+    raw: systemctl restart nis && systemctl add-wants multi-user.target rpcbind.service
