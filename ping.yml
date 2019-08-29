@@ -1,0 +1,9 @@
+- hosts: '{{ host }}'
+  tasks:
+  - debug: msg="Host is {{ ansible_fqdn }}"
+  roles:
+     - wtanaka.ping
+
+
+
+
